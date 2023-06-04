@@ -1,11 +1,11 @@
-import { createUser } from "@/service/user";
+import { updateUser } from "@/service/user";
 import { Button, Form, Input, Modal, Select } from "antd";
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 
-function AddUser({ open, refresh, closeAdd }) {
+function UpdateUser({ open, refresh, closeAdd, data }) {
   const [form] = Form.useForm();
   const submit = async (e) => {
-    const response = await createUser(e);
+    const response = await updateUser(data.id,e);
     if (response.data && response.data.status === 200) {
       refresh();
       onCloseAdd();
@@ -15,10 +15,19 @@ function AddUser({ open, refresh, closeAdd }) {
   };
   const onCloseAdd = () => {
     closeAdd();
-    form.resetFields();
   };
+  useEffect(()=>{
+    if(data){
+      form.setFieldsValue({
+        name: data.name,
+        email:data.email,
+        phone:data.phone,
+        role:data.role,
+      })
+    }
+  },[data])
   return (
-    <Modal title="Tạo Người Dùng" open={open} onCancel={onCloseAdd} footer={false}>
+    <Modal title="Sửa Người Dùng" open={open} onCancel={onCloseAdd} footer={false}>
       <Form onFinish={submit} layout="vertical" form={form}>
         <Form.Item
           label="Họ và tên"
@@ -45,13 +54,6 @@ function AddUser({ open, refresh, closeAdd }) {
           <Input size="large" />
         </Form.Item>
         <Form.Item
-          label="Mật khẩu"
-          name="password"
-          rules={[{ required: true, message: "Không được bỏ trống!" }]}
-        >
-          <Input size="large" />
-        </Form.Item>
-        <Form.Item
           label="Quyền"
           name="role"
           rules={[{ required: true, message: "Không được bỏ trống!" }]}
@@ -66,7 +68,7 @@ function AddUser({ open, refresh, closeAdd }) {
         </Form.Item>
         <div>
           <Button htmlType="submit" className="w-full" size="large">
-            Tạo
+            Cập nhật
           </Button>
         </div>
       </Form>
@@ -74,4 +76,4 @@ function AddUser({ open, refresh, closeAdd }) {
   );
 }
 
-export default AddUser;
+export default UpdateUser;
